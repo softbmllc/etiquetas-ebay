@@ -52,8 +52,8 @@ const chipClass = (estado: string) => {
 const bytesToKB = (b?: number) => (typeof b === "number" ? `${(b / 1024).toFixed(1)} KB` : "");
 
 // New small React components for consistent buttons and icons
-const Icon = ({ name }: { name: "open" | "download" | "link" | "print" | "send" }) => {
-  const common = { width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as any;
+const Icon = ({ name, size = 14 }: { name: "open" | "download" | "link" | "print" | "send" | "paperclip"; size?: number }) => {
+  const common = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as any;
   switch (name) {
     case "open":
       return (<svg {...common}><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M5 21h14a2 2 0 0 0 2-2V9"/></svg>);
@@ -65,6 +65,8 @@ const Icon = ({ name }: { name: "open" | "download" | "link" | "print" | "send" 
       return (<svg {...common}><path d="M6 9V2h12v7"/><path d="M6 18h12v4H6z"/><path d="M6 14H4a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-2"/></svg>);
     case "send":
       return (<svg {...common}><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>);
+    case "paperclip":
+      return (<svg {...common}><path d="M21.44 11.05l-9.19 9.19a6 6 0 1 1-8.49-8.49l9.19-9.19a4 4 0 1 1 5.66 5.66L9.17 18.26a2 2 0 1 1-2.83-2.83l8.49-8.49"/></svg>);
   }
   return null;
 };
@@ -270,22 +272,37 @@ export default function Page() {
                 />
               </label>
 
-              <label className="flex-1 block">
+              <div className="flex-1">
                 <div className="text-sm font-medium text-zinc-800">Adjuntar PDF(s)</div>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  multiple
-                  onChange={(e) => setFiles(e.target.files)}
-                  className="mt-1 w-full text-sm"
-                  required
-                />
-              </label>
+                <div className="mt-1 inline-flex">
+                  <input
+                    id="file-input"
+                    ref={undefined}
+                    type="file"
+                    accept="application/pdf"
+                    multiple
+                    onChange={(e) => setFiles(e.target.files)}
+                    className="sr-only peer"
+                    required
+                  />
+                  <label
+                    htmlFor="file-input"
+                    className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-2xl border border-zinc-200 bg-gradient-to-b from-white to-zinc-50/90 px-4 text-sm font-medium text-zinc-900 shadow-sm backdrop-blur-sm transition-all hover:border-zinc-800 hover:shadow-md active:scale-[0.99] peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-zinc-900"
+                  >
+                    <Icon name="paperclip" size={16} /> Elegir archivos
+                  </label>
+                </div>
+                <div className="mt-1 text-xs text-zinc-500">
+                  {files && files.length > 0
+                    ? `${files.length} archivo${files.length > 1 ? 's' : ''} seleccionado${files.length > 1 ? 's' : ''}`
+                    : "Podés seleccionar uno o varios PDF"}
+                </div>
+              </div>
 
               <div className="pt-6">
                 <button
                   disabled={uploading}
-                  className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-900 px-5 text-sm font-medium text-white transition-opacity disabled:opacity-50"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-medium text-white shadow-sm transition-all hover:opacity-95 active:scale-[0.99] disabled:opacity-50"
                 >
                   {uploading ? "Subiendo…" : "Subir PDF(s)"}
                 </button>
